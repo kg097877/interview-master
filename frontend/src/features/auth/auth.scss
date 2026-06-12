@@ -1,0 +1,636 @@
+// =============================================================================
+// AUTH PAGE STYLES — auth.scss
+// =============================================================================
+// This stylesheet controls the entire look and feel of the Login / Sign-up page.
+// It uses a dark theme with glassmorphism (frosted-glass) effects, animated
+// gradient blobs in the background, floating-label inputs, and a gradient
+// submit button. Everything is fully responsive.
+// =============================================================================
+
+
+// =============================================================================
+// 1. CSS CUSTOM PROPERTIES (Design Tokens)
+// =============================================================================
+// :root makes these variables available globally across the entire page.
+// Using CSS variables lets us change colors in one place and have them
+// update everywhere automatically — great for theming and maintenance.
+// =============================================================================
+:root {
+  // ---- Page Background ----
+  --auth-bg-dark: #0a0a0f;              // Very dark (almost black) background color for the page
+
+  // ---- Card (the login box) ----
+  --auth-card-bg: rgba(255, 255, 255, 0.05);    // 5% white — nearly transparent, creates the frosted glass base
+  --auth-card-border: rgba(255, 255, 255, 0.1);  // 10% white — subtle border to define card edges
+
+  // ---- Text Colors ----
+  --auth-text-primary: #ffffff;           // Pure white — used for headings and main text
+  --auth-text-secondary: #a1a1aa;         // Muted gray — used for labels, hints, and secondary text
+
+  // ---- Accent Colors (the 3 gradient blob colors) ----
+  --auth-accent-1: #6366f1;              // Indigo — primary accent (buttons, focus rings, links)
+  --auth-accent-2: #d946ef;              // Fuchsia/Pink — secondary accent (button gradient end)
+  --auth-accent-3: #0ea5e9;              // Sky Blue — tertiary accent (third background blob)
+
+  // ---- Input Fields ----
+  --auth-input-bg: rgba(0, 0, 0, 0.2);           // 20% black — dark translucent input background
+  --auth-input-border: rgba(255, 255, 255, 0.15); // 15% white — subtle input border, visible but not harsh
+  --auth-input-focus: rgba(99, 102, 241, 0.5);    // 50% indigo — soft glow ring that appears when an input is focused
+}
+
+
+// =============================================================================
+// 2. AUTH CONTAINER — Full-Page Wrapper
+// =============================================================================
+// This is the outermost wrapper that covers the entire viewport.
+// It centers the login card both horizontally and vertically using flexbox.
+// =============================================================================
+.auth-container {
+  min-height: 100vh;        // Takes at least the full viewport height (vh = viewport height units)
+  width: 100vw;             // Takes the full viewport width
+  display: flex;            // Enables flexbox layout
+  align-items: center;      // Centers child elements vertically
+  justify-content: center;  // Centers child elements horizontally
+  background-color: var(--auth-bg-dark);  // Dark background color
+  position: relative;       // Creates a positioning context for the absolutely-positioned background shapes
+  overflow: hidden;         // Hides any background shapes that extend beyond the viewport edges
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;  // Modern font stack with fallbacks
+  color: var(--auth-text-primary);  // Default text color for all child elements
+}
+
+
+// =============================================================================
+// 3. ANIMATED BACKGROUND — Floating Gradient Blobs
+// =============================================================================
+// Three large, blurred, colored circles float gently behind the login card.
+// They create a colorful aurora/nebula effect that makes the page feel dynamic.
+//
+// How it works:
+//   1. Each .shape is a large circle with a radial-gradient (solid color → transparent)
+//   2. filter: blur(80px) makes them super soft and diffused
+//   3. The "float" animation slowly moves and scales them
+//   4. Different animation-delay values make each blob move independently
+// =============================================================================
+.auth-background {
+  position: absolute;       // Positioned relative to .auth-container (which has position: relative)
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;         // Clips any parts of the shapes that go outside
+  z-index: 0;              // Sits behind the card (card has z-index: 1)
+
+  // ---- Common styles for all three blobs ----
+  .shape {
+    position: absolute;     // Each blob is positioned independently within the background
+    filter: blur(80px);     // Heavy blur makes the circle edges soft and cloud-like
+    border-radius: 50%;     // Makes the element a perfect circle
+    animation: float 20s infinite ease-in-out alternate;  // Applies the floating animation (see @keyframes below)
+    opacity: 0.6;           // 60% opacity — visible but not overwhelming
+  }
+
+  // ---- Blob 1: Indigo (top-left corner) ----
+  .shape-1 {
+    top: -10%;              // Slightly off-screen at the top (creates partial visibility)
+    left: -10%;             // Slightly off-screen on the left
+    width: 50vw;            // Half the viewport width — these are intentionally very large
+    height: 50vw;
+    // radial-gradient: solid indigo in the center, fading to transparent at 70% of the radius
+    background: radial-gradient(circle, var(--auth-accent-1) 0%, transparent 70%);
+    animation-delay: 0s;    // Starts immediately (no delay)
+  }
+
+  // ---- Blob 2: Fuchsia (bottom-right corner) ----
+  .shape-2 {
+    bottom: -10%;           // Slightly off-screen at the bottom
+    right: -10%;            // Slightly off-screen on the right
+    width: 60vw;            // Slightly larger than blob 1 for visual variety
+    height: 60vw;
+    background: radial-gradient(circle, var(--auth-accent-2) 0%, transparent 70%);
+    animation-delay: -5s;   // Negative delay = starts 5s into the animation cycle (so it's out of sync with blob 1)
+    animation-duration: 25s; // Slower than blob 1 (25s vs 20s) — adds organic, non-repetitive movement
+  }
+
+  // ---- Blob 3: Sky Blue (middle-right area) ----
+  .shape-3 {
+    top: 40%;               // Positioned near the vertical center
+    left: 60%;              // Positioned toward the right side
+    width: 40vw;            // Smallest blob
+    height: 40vw;
+    background: radial-gradient(circle, var(--auth-accent-3) 0%, transparent 70%);
+    animation-delay: -10s;  // Even more offset — ensures all 3 blobs are in different animation phases
+    animation-duration: 22s; // Unique duration so all 3 blobs never sync up perfectly
+  }
+}
+
+// ---- Float Animation Keyframes ----
+// Gently moves and scales the blobs to simulate a slow, drifting motion.
+// "alternate" in the animation property means it plays forward, then backward, creating a smooth loop.
+@keyframes float {
+  0%   { transform: translate(0, 0) scale(1); }       // Starting position (no movement, normal size)
+  33%  { transform: translate(5%, 5%) scale(1.05); }   // Drift right & down, grow 5%
+  66%  { transform: translate(-2%, 8%) scale(0.95); }  // Drift left & further down, shrink 5%
+  100% { transform: translate(0, 0) scale(1); }        // Return to starting position
+}
+
+
+// =============================================================================
+// 4. AUTH CARD — The Login/Sign-Up Box (Glassmorphism)
+// =============================================================================
+// This is the main card that holds the form. It uses the "glassmorphism" design
+// pattern — a semi-transparent background with a backdrop blur that makes the
+// colorful blobs behind it appear frosted/blurred through the card surface.
+//
+// Key properties for glassmorphism:
+//   - background: semi-transparent (rgba with low alpha)
+//   - backdrop-filter: blur() — blurs whatever is behind the element
+//   - border: subtle semi-transparent white border
+// =============================================================================
+.auth-card {
+  position: relative;       // Needed so z-index works (z-index only applies to positioned elements)
+  z-index: 1;              // Sits above the background blobs (which are at z-index: 0)
+  width: 100%;             // Takes full width of parent...
+  max-width: 440px;        // ...but never exceeds 440px (keeps the card a nice readable width)
+  background: var(--auth-card-bg);  // 5% white — the semi-transparent glass layer
+  backdrop-filter: blur(20px);       // Blurs the background content seen through this element
+  -webkit-backdrop-filter: blur(20px); // Safari/WebKit support (required for iOS and older Safari)
+  border: 1px solid var(--auth-card-border);  // Thin semi-transparent border — defines the card edge
+  border-radius: 24px;     // Rounded corners (24px = noticeably round, modern feel)
+  padding: 48px 40px;      // Inner spacing: 48px top/bottom, 40px left/right
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);  // Large, soft shadow underneath for depth/elevation
+  // Entrance animation: card slides up 30px and fades in when the page loads
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  // cubic-bezier(0.16, 1, 0.3, 1) = "ease-out-expo" — fast start, very smooth deceleration
+  // "forwards" = keeps the final animation state (otherwise it would snap back to opacity: 0)
+}
+
+// ---- Slide-Up Fade-In Animation for the Card ----
+// When the page loads, the card starts invisible and 30px below its final position,
+// then smoothly fades in and slides up to its resting spot.
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;                    // Invisible at the start
+    transform: translateY(30px);   // 30px below final position
+  }
+  100% {
+    opacity: 1;                    // Fully visible
+    transform: translateY(0);      // At its final resting position
+  }
+}
+
+
+// =============================================================================
+// 5. AUTH HEADER — Title and Subtitle
+// =============================================================================
+// The header section at the top of the card, containing the page title
+// (e.g., "Welcome Back") and a subtitle (e.g., "Sign in to continue").
+// =============================================================================
+.auth-header {
+  text-align: center;       // Centers the title and subtitle
+  margin-bottom: 40px;      // Space between the header and the form below
+
+  // ---- Page Title (e.g., "Welcome Back") ----
+  h2 {
+    font-size: 32px;
+    font-weight: 700;       // Bold weight
+    margin: 0 0 8px 0;      // Only bottom margin (8px gap to subtitle)
+    // ---- Gradient Text Effect ----
+    // Instead of a solid color, the text is filled with a gradient.
+    // How it works:
+    //   1. Set a gradient as the background of the h2
+    //   2. background-clip: text — clips the background to only show behind the text characters
+    //   3. text-fill-color: transparent — makes the actual text color invisible,
+    //      so you see the gradient background "through" the text shape
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);  // White → light indigo diagonal gradient
+    -webkit-background-clip: text;             // Clip background to text shape (WebKit/Chrome/Safari)
+    -webkit-text-fill-color: transparent;       // Make the text itself transparent to reveal the gradient
+  }
+
+  // ---- Subtitle (e.g., "Sign in to your account") ----
+  p {
+    color: var(--auth-text-secondary);  // Muted gray — visually de-emphasized
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+
+// =============================================================================
+// 6. AUTH FORM — Form Layout
+// =============================================================================
+// Simple vertical flexbox layout that stacks form elements (input groups,
+// actions row, submit button) with consistent 24px gaps between them.
+// =============================================================================
+.auth-form {
+  display: flex;              // Flexbox layout
+  flex-direction: column;     // Stack children vertically (top to bottom)
+  gap: 24px;                  // 24px space between each child element
+}
+
+
+// =============================================================================
+// 7. INPUT GROUP — Floating Label Pattern
+// =============================================================================
+// Each form field (email, password, etc.) is wrapped in an .input-group.
+// This implements the "floating label" UX pattern:
+//
+//   - Initially, the label sits inside the input field as placeholder text
+//   - When the user clicks the input (focus) or types something, the label
+//     floats up above the input and shrinks slightly
+//   - This saves vertical space while still providing a label
+//
+// How the CSS trick works:
+//   - The <label> is positioned absolutely on top of the <input>
+//   - The <input> uses a placeholder=" " (space) so :placeholder-shown works
+//   - When focused OR when the placeholder is no longer showing (user typed),
+//     the ~ combinator targets the sibling <label> and transforms it upward
+// =============================================================================
+.input-group {
+  position: relative;         // Positioning context for the absolutely-positioned label
+  
+  input {
+    width: 100%;              // Full width of the card
+    background: var(--auth-input-bg);      // Dark translucent background
+    border: 1px solid var(--auth-input-border);  // Subtle light border
+    border-radius: 12px;      // Rounded corners to match the card's aesthetic
+    padding: 16px 16px;       // Inner padding — gives the input a comfortable height
+    color: var(--auth-text-primary);       // White text for user's typed input
+    font-size: 16px;          // Readable text size (also prevents iOS zoom on focus for sizes < 16px)
+    outline: none;            // Removes the browser's default blue outline ring
+    transition: all 0.3s ease; // Smooth transition for border-color and box-shadow changes
+    box-sizing: border-box;   // Ensures padding is included in the width calculation (prevents overflow)
+
+    // ---- Focus State: When the user clicks/taps into the input ----
+    &:focus {
+      border-color: var(--auth-accent-1);  // Border changes to indigo
+      // Creates a soft indigo glow ring around the input.
+      // "0 0 0 4px" = no offset, no blur, 4px spread — acts as a solid ring
+      box-shadow: 0 0 0 4px var(--auth-input-focus);
+    }
+
+    // ---- Floating Label Trigger ----
+    // ~ is the "general sibling combinator" — targets the <label> that comes after this <input>
+    // These two selectors trigger the label to float up:
+    //   1. &:focus ~ label         → when the input is focused (user clicked in)
+    //   2. &:not(:placeholder-shown) ~ label → when user has typed something
+    //      (:placeholder-shown matches when the placeholder is visible, i.e., input is empty)
+    &:focus ~ label,
+    &:not(:placeholder-shown) ~ label {
+      transform: translateY(-24px) scale(0.85);  // Move up 24px and shrink to 85% size
+      color: #a5b4fc;                             // Change label color to light indigo
+      background: transparent;                    // Ensure no background bleeds through
+    }
+  }
+
+  // ---- The Floating Label Element ----
+  label {
+    position: absolute;       // Taken out of normal flow, positioned relative to .input-group
+    left: 16px;              // Aligns with the input's left padding
+    top: 16px;               // Aligns with the input's top padding — sits right on top of where text would be
+    color: var(--auth-text-secondary);  // Muted gray — looks like placeholder text
+    pointer-events: none;    // IMPORTANT: makes the label click-through, so clicking it focuses the input behind it
+    transition: all 0.2s ease;  // Smooth animation when floating up/down
+    transform-origin: left top;  // Scale transformation happens from the top-left corner (prevents shifting)
+  }
+}
+
+
+// =============================================================================
+// 8. AUTH ACTIONS — Remember Me & Forgot Password Row
+// =============================================================================
+// A row between the inputs and the submit button containing:
+//   - A custom-styled "Remember Me" checkbox
+//   - A "Forgot Password?" link
+// =============================================================================
+.auth-actions {
+  display: flex;                    // Horizontal layout
+  justify-content: space-between;   // Pushes checkbox to the left, link to the right
+  align-items: center;              // Vertically centers both items
+  font-size: 14px;                  // Smaller text for these secondary actions
+
+  // ---- Custom Checkbox: "Remember Me" ----
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;                       // Space between the checkbox and its label text
+    cursor: pointer;                // Hand cursor to indicate it's clickable
+    color: var(--auth-text-secondary);
+    transition: color 0.2s ease;
+
+    // When hovering over the entire remember-me area, brighten the text
+    &:hover {
+      color: var(--auth-text-primary);  // White — more prominent on hover
+    }
+
+    // ---- Custom Checkbox Styling ----
+    // The native browser checkbox is hidden and replaced with a custom-styled box.
+    input[type="checkbox"] {
+      appearance: none;             // REMOVES the native browser checkbox appearance entirely
+      width: 18px;                  // Custom size
+      height: 18px;
+      border: 1px solid var(--auth-input-border);  // Matches input field borders for visual consistency
+      border-radius: 4px;           // Slightly rounded corners
+      background: var(--auth-input-bg);  // Dark translucent background (matches input fields)
+      cursor: pointer;
+      position: relative;           // Needed for the ::after checkmark positioning
+      transition: all 0.2s ease;    // Smooth color transition when checking/unchecking
+
+      // ---- Checked State: When the checkbox is ticked ----
+      &:checked {
+        background: var(--auth-accent-1);    // Fills with indigo
+        border-color: var(--auth-accent-1);  // Border also turns indigo (seamless look)
+
+        // ---- Checkmark Icon ----
+        // Uses a pseudo-element (::after) to display a ✓ character inside the box.
+        // This is a common CSS technique to add decorative content without extra HTML.
+        &::after {
+          content: '✓';             // The checkmark character
+          position: absolute;       // Positioned relative to the checkbox (which has position: relative)
+          top: 50%;                 // Center vertically...
+          left: 50%;                // ...and horizontally
+          transform: translate(-50%, -50%);  // Fine-tune centering (moves it back by half its own size)
+          color: white;             // White checkmark on indigo background
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  // ---- Forgot Password Link ----
+  .forgot-link {
+    color: var(--auth-accent-1);    // Indigo color — stands out as a clickable link
+    text-decoration: none;          // No underline by default
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #818cf8;               // Slightly lighter indigo on hover
+      text-decoration: underline;   // Underline appears on hover for clarity
+    }
+  }
+}
+
+
+// =============================================================================
+// 9. AUTH BUTTON — Gradient Submit Button
+// =============================================================================
+// The main call-to-action button (e.g., "Sign In" or "Create Account").
+// Features:
+//   - Indigo → Fuchsia gradient background
+//   - A shine overlay on hover (::before pseudo-element)
+//   - Lifts up on hover with a colored shadow (creates a "floating" feel)
+//   - Presses down on click/active
+// =============================================================================
+.auth-button {
+  width: 100%;               // Full width of the card
+  padding: 16px;             // Comfortable click/tap target
+  border-radius: 12px;       // Rounded corners matching the inputs
+  border: none;              // Removes default button border
+  // ---- Gradient Background: Indigo → Fuchsia at 135° angle ----
+  background: linear-gradient(135deg, var(--auth-accent-1) 0%, var(--auth-accent-2) 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;          // Semi-bold text
+  cursor: pointer;           // Hand cursor
+  transition: all 0.3s ease; // Smooth transitions for hover/active effects
+  position: relative;        // Needed for the ::before overlay positioning
+  overflow: hidden;          // Clips the ::before overlay to the button's rounded shape
+
+  // ---- Shine Overlay (hidden by default, shown on hover) ----
+  // This creates a subtle white-to-transparent gradient that sits on top of the button.
+  // When hovered, it fades in, creating a "shine" or "light reflection" effect.
+  &::before {
+    content: '';              // Required for pseudo-elements (even if empty)
+    position: absolute;      // Covers the entire button
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    // Semi-transparent white gradient — creates the shine effect
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+    opacity: 0;              // Hidden by default
+    transition: opacity 0.3s ease;  // Smooth fade-in/out
+  }
+
+  // ---- Hover State ----
+  &:hover {
+    transform: translateY(-2px);  // Lifts the button up 2px (creates a subtle "floating" effect)
+    // Colored shadow below — reinforces the floating feel and adds a glow
+    box-shadow: 0 10px 20px -10px var(--auth-accent-1);
+    
+    // Show the shine overlay when hovering
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  // ---- Active/Click State ----
+  &:active {
+    transform: translateY(1px);  // Pushes button down 1px — simulates a physical button press
+  }
+}
+
+
+// =============================================================================
+// 10. AUTH FOOTER — Sign Up / Sign In Toggle Link
+// =============================================================================
+// The text at the bottom of the card like:
+//   "Don't have an account? Sign Up"
+// Provides navigation between the login and registration views.
+// =============================================================================
+.auth-footer {
+  margin-top: 32px;          // Space above the footer (separates it from the button)
+  text-align: center;        // Centers the text
+
+  p {
+    color: var(--auth-text-secondary);  // Muted gray for the question text
+    font-size: 14px;
+    margin: 0;
+  }
+
+  // ---- The "Sign Up" / "Sign In" clickable link ----
+  a {
+    color: var(--auth-text-primary);    // White — stands out from the gray text
+    text-decoration: none;              // No underline by default
+    font-weight: 600;                   // Semi-bold to draw attention
+    margin-left: 4px;                   // Small gap between the question mark and the link
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--auth-accent-1);      // Turns indigo on hover
+      text-decoration: underline;       // Adds underline for clarity
+    }
+  }
+}
+
+
+// =============================================================================
+// 11. RESPONSIVE DESIGN — Mobile (screens ≤ 480px)
+// =============================================================================
+// On small screens (phones), the floating card design doesn't work well because
+// the card would be too narrow with margins. Instead, we make the card take up
+// the entire screen — no rounded corners, no border, full height.
+// This creates a native-app-like full-screen login experience on mobile.
+// =============================================================================
+@media (max-width: 480px) {
+  .auth-card {
+    border-radius: 0;          // Remove rounded corners — card fills the screen edge-to-edge
+    min-height: 100vh;         // Full viewport height
+    border: none;              // Remove the glassmorphism border
+    display: flex;             // Use flexbox to center the form content vertically
+    flex-direction: column;
+    justify-content: center;   // Vertically center the form within the full-screen card
+    padding: 32px 24px;        // Slightly reduced padding for smaller screens
+    background: rgba(10, 10, 15, 0.85);  // More opaque background (85% vs 5%) — improves readability
+    // on mobile, since the blurred background shapes are less visible on small screens
+  }
+}
+
+
+// =============================================================================
+// 12. AUTH LOADING SCREEN
+// =============================================================================
+// Full-page loading indicator shown while auth state is being checked.
+// Reuses the same dark background, animated blobs, and glassmorphism card
+// to keep a seamless visual experience during transitions.
+// =============================================================================
+.auth-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--auth-bg-dark);
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  // ---- Background blobs (same as auth-background) ----
+  .auth-loading-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+
+    .shape {
+      position: absolute;
+      filter: blur(80px);
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out alternate;
+      opacity: 0.5;
+    }
+
+    .shape-1 {
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, var(--auth-accent-1) 0%, transparent 70%);
+    }
+
+    .shape-2 {
+      bottom: -10%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, var(--auth-accent-2) 0%, transparent 70%);
+      animation-delay: -5s;
+      animation-duration: 25s;
+    }
+
+    .shape-3 {
+      top: 40%;
+      left: 60%;
+      width: 40vw;
+      height: 40vw;
+      background: radial-gradient(circle, var(--auth-accent-3) 0%, transparent 70%);
+      animation-delay: -10s;
+      animation-duration: 22s;
+    }
+  }
+
+  // ---- Centered loading card ----
+  .auth-loading-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 48px 56px;
+    background: var(--auth-card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--auth-card-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  // ---- Gradient spinning ring ----
+  .auth-loading-spinner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--auth-accent-1);
+    border-right-color: var(--auth-accent-2);
+    animation: authSpin 0.9s linear infinite;
+  }
+
+  // ---- Loading text ----
+  .auth-loading-text {
+    font-size: 16px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: authPulse 1.8s ease-in-out infinite;
+  }
+
+  // ---- Dot animation under the text ----
+  .auth-loading-dots {
+    display: flex;
+    gap: 8px;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--auth-accent-1);
+      animation: authDotBounce 1.4s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+        background: var(--auth-accent-2);
+      }
+      &:nth-child(3) {
+        animation-delay: 0.4s;
+        background: var(--auth-accent-3);
+      }
+    }
+  }
+}
+
+// ---- Loading-specific keyframes ----
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes authPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes authDotBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
