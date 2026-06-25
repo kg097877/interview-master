@@ -11,8 +11,12 @@ export default function Register() {
   const { loading, handleRegister } = useAuth()
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleRegister({ name, email, password })
-    navigate("/")
+    const success = await handleRegister({ username: name, email, password })
+    if (success) {
+      navigate("/")
+    } else {
+      alert("Registration failed. Email or username might already exist.")
+    }
   };
   if (loading) {
     return <AuthLoadingScreen />;

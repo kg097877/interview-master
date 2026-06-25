@@ -10,4 +10,17 @@ const interviewController = require("../controller/interview.controller")
  */
 
 interviewRouter.post("/", authMiddleware.authUser, upload.single("resume"), interviewController.generateInterviewReportController)
-module.exports = interviewRouter
+/**
+ * @route GET/api/interview/report/:id
+ * @description get  interview reports by id 
+ * @access private
+ */
+interviewRouter.get("/report/:id", authMiddleware.authUser, interviewController.getInterviewReportByIdController)
+
+/**
+ * @route GET/api/interview/
+ * @description get  all interview reports of logged in user
+ * @access private
+ */
+interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInterviewReportsController)
+module.exports = interviewRouter    
