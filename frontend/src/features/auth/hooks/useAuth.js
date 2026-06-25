@@ -1,18 +1,23 @@
 import { useContext,useEffect } from "react";
 import { AuthContext } from "../auth.context";
 import { login, register, logout, getMe } from "../services/auth.api"
+import InterviewContext from "../../interview/interview.context";
 
 
 
 export const useAuth = () => {
     const context = useContext(AuthContext)
     const { user, setUser, loading, setLoading } = context
+    const interviewCtx = useContext(InterviewContext)
     const handleLogin = async ({ email, password }) => {
         try {
             setLoading(true)
             const data = await login({ email, password })
             if (data?.user) {
                 setUser(data.user)
+                // Clear previous user's interview data
+                interviewCtx?.setReports([])
+                interviewCtx?.setReport(null)
                 return true
             }
             return false
@@ -29,6 +34,9 @@ export const useAuth = () => {
             const data = await register({ username, email, password })
             if (data?.user) {
                 setUser(data.user)
+                // Clear previous user's interview data
+                interviewCtx?.setReports([])
+                interviewCtx?.setReport(null)
                 return true
             }
             return false
@@ -44,6 +52,9 @@ export const useAuth = () => {
             setLoading(true)
             await logout()
             setUser(null)
+            // Clear interview data on logout
+            interviewCtx?.setReports([])
+            interviewCtx?.setReport(null)
         } catch (err) {
             console.log("Logout failed:", err)
         } finally {

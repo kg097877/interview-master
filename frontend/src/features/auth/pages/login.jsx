@@ -6,13 +6,19 @@ import AuthLayout, { AuthLoadingScreen } from "../components/AuthLayout";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const { loading, handleLogin } = useAuth()
   const navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin({ email, password })
-    navigate("/")
+    setError("");
+    const success = await handleLogin({ email, password })
+    if (success) {
+      navigate("/")
+    } else {
+      setError("Invalid email or password. Please try again.")
+    }
   };
   if (loading) {
     return <AuthLoadingScreen />;
@@ -58,6 +64,12 @@ export default function Login() {
             </label>
             <a href="#" className="forgot-link">Forgot Password?</a>
           </div>
+
+          {error && (
+            <p style={{ color: '#f87171', fontSize: '13px', margin: '0 0 8px 0', textAlign: 'center' }}>
+              {error}
+            </p>
+          )}
 
           <button type="submit" className="auth-button">
             Sign In
