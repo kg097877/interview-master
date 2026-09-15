@@ -185,6 +185,11 @@
 
 // ---- LEFT COLUMN: Nav Menu ----
 .layout-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+
   .nav-menu {
     list-style: none;
     padding: 0;
@@ -215,6 +220,67 @@
       }
     }
   }
+
+  .download-pdf-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  .download-error {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: center;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 // ---- MIDDLE COLUMN: Main Content ----

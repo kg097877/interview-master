@@ -8,13 +8,28 @@ const Interview = () => {
     // Read the data passed from Home.jsx
     const location = useLocation();
     const { interviewId } = useParams();
-    const { getReportById } = useInterview();
+    const { getReportById, getResumePdf } = useInterview();
 
     const [reportData, setReportData] = useState(location.state?.reportData || null);
     const [isLoading, setIsLoading] = useState(!location.state?.reportData?.technicalQuestions);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadError, setDownloadError] = useState(null);
+
+    const handleDownloadPdf = async () => {
+        setIsDownloading(true);
+        setDownloadError(null);
+        try {
+            await getResumePdf(interviewId);
+        } catch (error) {
+            console.error("Failed to download resume PDF:", error);
+            setDownloadError("Failed to download PDF. Please try again.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     // State for the currently selected section in the left nav
-    const [activeSection, setActiveSection] = useState('technical');
+    const [activeSection, setActiveSection] = useState('overview');
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -65,12 +80,42 @@ const Interview = () => {
         technicalQuestions = [],
         behavioralQuestions = [],
         preparationPlan = [],
-        skillGaps = []
+        skillGaps = [],
+        candidateProfile,
+        strengths = []
     } = reportData;
 
     // Helper to render the main content based on the active section
     const renderMainContent = () => {
         switch (activeSection) {
+            case 'overview':
+                return (
+                    <div className="section-content fade-in">
+                        <h2 className="section-title">Candidate Profile & Strengths</h2>
+                        {candidateProfile ? (
+                            <div className="interview-card">
+                                <h3>{candidateProfile.name} - {candidateProfile.currentRole}</h3>
+                                <p><strong>Experience Level:</strong> {candidateProfile.experienceLevel}</p>
+                                <p><strong>Summary:</strong> {candidateProfile.summary}</p>
+                            </div>
+                        ) : (
+                            <p className="empty-state">No profile available.</p>
+                        )}
+                        <h2 className="section-title" style={{ marginTop: '2rem' }}>Strengths</h2>
+                        <div className="cards-list">
+                            {strengths.map((s, index) => (
+                                <div key={index} className="interview-card">
+                                    <h4 className="q-title">{s.strength}</h4>
+                                    <div className="q-answer">
+                                        <strong>Evidence:</strong> {s.evidence}
+                                    </div>
+                                </div>
+                            ))}
+                            {strengths.length === 0 && <p className="empty-state">No strengths available.</p>}
+                        </div>
+                    </div>
+                );
+
             case 'technical':
                 return (
                     <div className="section-content fade-in">
@@ -178,27 +223,58 @@ const Interview = () => {
             <main className="interview-layout">
                 {/* LEFT COLUMN: Navigation */}
                 <aside className="layout-left glass-panel">
-                    <h3 className="panel-heading">Report Sections</h3>
-                    <ul className="nav-menu">
-                        <li 
-                            className={`nav-item ${activeSection === 'technical' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('technical')}
-                        >
-                            Technical Questions
-                        </li>
-                        <li 
-                            className={`nav-item ${activeSection === 'behavioral' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('behavioral')}
-                        >
-                            Behavioral Questions
-                        </li>
-                        <li 
-                            className={`nav-item ${activeSection === 'roadmap' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('roadmap')}
-                        >
-                            Road Map
-                        </li>
-                    </ul>
+                    <div className="nav-container">
+                        <h3 className="panel-heading">Report Sections</h3>
+                        <ul className="nav-menu">
+                            <li 
+                                className={`nav-item ${activeSection === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveSection('overview')}
+                            >
+                                Overview
+                            </li>
+
+                            <li 
+                                className={`nav-item ${activeSection === 'technical' ? 'active' : ''}`}
+                                onClick={() => setActiveSection('technical')}
+                            >
+                                Technical Questions
+                            </li>
+                            <li 
+                                className={`nav-item ${activeSection === 'behavioral' ? 'active' : ''}`}
+                                onClick={() => setActiveSection('behavioral')}
+                            >
+                                Behavioral Questions
+                            </li>
+                            <li 
+                                className={`nav-item ${activeSection === 'roadmap' ? 'active' : ''}`}
+                                onClick={() => setActiveSection('roadmap')}
+                            >
+                                Road Map
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button 
+                        className="download-pdf-btn"
+                        onClick={handleDownloadPdf}
+                        disabled={isDownloading}
+                    >
+                        {isDownloading ? (
+                            <>
+                                <span className="spinner"></span>
+                                Generating PDF...
+                            </>
+                        ) : (
+                            <>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                </svg>
+                                Download Resume PDF
+                            </>
+                        )}
+                    </button>
+                    {downloadError && <div className="download-error">{downloadError}</div>}
                 </aside>
 
                 {/* MIDDLE COLUMN: Main Content */}

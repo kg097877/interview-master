@@ -6,18 +6,14 @@ import AuthLayout, { AuthLoadingScreen } from "../components/AuthLayout";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const { loading, handleLogin } = useAuth()
+  const { loading, error, handleLogin } = useAuth()
   const navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     const success = await handleLogin({ email, password })
     if (success) {
       navigate("/")
-    } else {
-      setError("Invalid email or password. Please try again.")
     }
   };
   if (loading) {
@@ -66,7 +62,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <p style={{ color: '#f87171', fontSize: '13px', margin: '0 0 8px 0', textAlign: 'center' }}>
+            <p className="form-error" style={{ color: '#f87171', fontSize: '13px', margin: '0 0 8px 0', textAlign: 'center' }}>
               {error}
             </p>
           )}
@@ -85,4 +81,3 @@ export default function Login() {
     </AuthLayout>
   );
 }
-

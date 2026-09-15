@@ -8,20 +8,19 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate()
-  const { loading, handleRegister } = useAuth()
+  const { loading, error, handleRegister } = useAuth()
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await handleRegister({ username: name, email, password })
     if (success) {
       navigate("/")
-    } else {
-      alert("Registration failed. Email or username might already exist.")
     }
   };
+  
   if (loading) {
     return <AuthLoadingScreen />;
   }
-
 
   return (
     <AuthLayout>
@@ -68,6 +67,12 @@ export default function Register() {
             <label htmlFor="password">Password</label>
           </div>
 
+          {error && (
+            <p className="form-error" style={{ color: '#f87171', fontSize: '13px', margin: '0 0 8px 0', textAlign: 'center' }}>
+              {error}
+            </p>
+          )}
+
           <button type="submit" className="auth-button">
             Create Account
           </button>
@@ -82,4 +87,3 @@ export default function Register() {
     </AuthLayout>
   );
 }
-

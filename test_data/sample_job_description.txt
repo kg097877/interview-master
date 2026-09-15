@@ -1,0 +1,20 @@
+Role: Senior Full Stack Engineer (Node.js & React)
+Company: ScaleUp Systems
+Location: Remote (US)
+
+About the Role:
+We are looking for a Senior Full Stack Engineer to join our core product team. You will be responsible for designing, building, and maintaining robust APIs and responsive web interfaces. You will work on scaling our backend services and ensuring high performance and availability.
+
+Key Responsibilities:
+- Design, build, and deploy scalable Node.js microservices.
+- Develop clean, interactive, and responsive frontend dashboards using React and TypeScript.
+- Optimize database schemas and query performance in PostgreSQL.
+- Maintain and improve containerized deployment pipelines using Docker and AWS.
+- Collaborate with product managers and other engineers to scope new features.
+
+Requirements:
+- 4+ years of professional software engineering experience.
+- Deep expertise in JavaScript/TypeScript, Node.js (Express), and React.
+- Solid experience writing raw SQL and optimizing queries in relational databases (PostgreSQL preferred).
+- Familiarity with Docker, CI/CD pipelines, and cloud platforms like AWS.
+- Strong communication and collaboration skills.

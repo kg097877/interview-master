@@ -1,0 +1,27 @@
+Jane Doe
+San Francisco, CA | jane.doe@email.com | (123) 456-7890 | github.com/janedoe | linkedin.com/in/janedoe
+
+PROFESSIONAL SUMMARY
+Highly competent Full Stack Developer with over 5 years of professional experience building and scaling modern web applications. Specialized in JavaScript/TypeScript, React, Node.js, and relational databases. Passionate about writing clean, maintainable code and optimizing system performance.
+
+TECHNICAL SKILLS
+- Languages: JavaScript (ES6+), TypeScript, SQL, HTML5, CSS3/SASS
+- Frameworks & Libraries: React, Redux, Node.js, Express, Jest
+- Databases: PostgreSQL, MongoDB, Redis
+- Tools & DevOps: Git, Docker, AWS (S3, EC2), REST APIs
+
+PROFESSIONAL EXPERIENCE
+Senior Software Engineer | Tech Corp (San Francisco, CA) | 2021 - Present
+- Led a team of 3 developers in rebuilding a legacy e-commerce front-end using React and TypeScript, resulting in a 40% improvement in page-load speeds.
+- Designed and implemented RESTful microservices using Node.js and Express, handling over 100k daily active users.
+- Optimized database queries in PostgreSQL, reducing average API response times from 350ms to 120ms.
+- Built automated CI/CD pipelines using GitHub Actions and Docker, reducing deployment time by 50%.
+
+Software Engineer | Web Solutions (Oakland, CA) | 2018 - 2021
+- Developed and maintained multiple client-facing SaaS web applications using React and Node.js.
+- Integrated third-party payment gateways (Stripe, PayPal) and authentication services (OAuth, JWT).
+- Collaborated closely with UI/UX designers to implement pixel-perfect, responsive landing pages and dashboards.
+- Wrote comprehensive unit and integration tests using Jest, increasing test coverage from 60% to 85%.
+
+EDUCATION
+B.S. in Computer Science | State University | 2014 - 2018

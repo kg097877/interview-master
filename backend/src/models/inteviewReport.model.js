@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const candidateProfileSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    currentRole: { type: String, required: true },
+    experienceLevel: { type: String, enum: ["fresher", "junior", "mid", "senior", "lead"], required: true },
+    summary: { type: String, required: true }
+}, {
+    _id: false
+});
+
+const strengthSchema = new mongoose.Schema({
+    strength: { type: String, required: true },
+    evidence: { type: String, required: true }
+}, {
+    _id: false
+});
 
 const technicalQuestionSchema = new mongoose.Schema({
     question: {
@@ -21,7 +36,7 @@ const technicalQuestionSchema = new mongoose.Schema({
 const behavioralQuestionSchema = new mongoose.Schema({
     question: {
         type: String,
-        required: [ true, "Technical question is required" ]
+        required: [ true, "Behavioral question is required" ]
     },
     intention: {
         type: String,
@@ -80,6 +95,9 @@ const interviewReportSchema = new mongoose.Schema({
         min: 0,
         max: 100,
     },
+    
+    candidateProfile: candidateProfileSchema,
+    strengths: [ strengthSchema ],
     
     technicalQuestions: [ technicalQuestionSchema ],
     behavioralQuestions: [ behavioralQuestionSchema ],
