@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useInterview } from '../hooks/useInterview';
 import '../style/reportsList.scss';
 
 const ReportsList = () => {
     const navigate = useNavigate();
-    const { getAllReports, reports, loading, setReports } = useInterview();
+    const { getAllReports, reports, loading, setReports, deleteReport } = useInterview();
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         // Clear stale data immediately, then fetch fresh reports for current user
@@ -24,6 +25,17 @@ const ReportsList = () => {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this report?")) {
+            setError(null);
+            try {
+                await deleteReport(id);
+            } catch (err) {
+                setError(err?.response?.data?.message || "Failed to delete report.");
+            }
+        }
     };
 
     return (
@@ -65,6 +77,8 @@ const ReportsList = () => {
                     <h1>Your Past Reports</h1>
                     <p>Review and study your previously generated interview preparation reports.</p>
                 </div>
+                
+                {error && <p className="form-error" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
 
                 {loading ? (
                     <div className="reports-loading">
@@ -94,12 +108,19 @@ const ReportsList = () => {
                                             <span className="score-value">{report.matchScore}%</span>
                                         </div>
                                     )}
-                                    <div className="card-footer">
+                                    <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <button 
                                             className="view-btn"
                                             onClick={() => navigate(`/interview/${report._id}`, { state: { reportData: report } })}
                                         >
                                             View Report →
+                                        </button>
+                                        <button
+                                            className="view-btn"
+                                            style={{ backgroundColor: 'red', color: 'white', border: 'none', marginLeft: '10px' }}
+                                            onClick={() => handleDelete(report._id)}
+                                        >
+                                            Delete
                                         </button>
                                     </div>
                                 </div>

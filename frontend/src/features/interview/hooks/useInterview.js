@@ -1,5 +1,4 @@
-
-import { getAllInterviewReports, getInterviewReportById, generateInterviewReport, generateResumePdf } from "../services/interview.api";
+import { getAllInterviewReports, getInterviewReportById, generateInterviewReport, generateResumePdf, deleteInterviewReport } from "../services/interview.api";
 import { useContext } from "react";
 import InterviewContext from "../interview.context";
 
@@ -53,6 +52,7 @@ export const useInterview = () => {
         setLoading(true)
         try {
             await deleteInterviewReport(interviewId)
+            setReports(prev => prev.filter(r => r._id !== interviewId))
         } catch (error) {
             throw error
         } finally {

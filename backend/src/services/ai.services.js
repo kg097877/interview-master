@@ -1,7 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 const { z } = require("zod");
 const puppeteer = require("puppeteer");
-const { default: zodToJsonSchema } = require("zod-to-json-schema");
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_API_KEY
 });

@@ -29,7 +29,7 @@ const Interview = () => {
     };
 
     // State for the currently selected section in the left nav
-    const [activeSection, setActiveSection] = useState('technical');
+    const [activeSection, setActiveSection] = useState('overview');
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -80,12 +80,42 @@ const Interview = () => {
         technicalQuestions = [],
         behavioralQuestions = [],
         preparationPlan = [],
-        skillGaps = []
+        skillGaps = [],
+        candidateProfile,
+        strengths = []
     } = reportData;
 
     // Helper to render the main content based on the active section
     const renderMainContent = () => {
         switch (activeSection) {
+            case 'overview':
+                return (
+                    <div className="section-content fade-in">
+                        <h2 className="section-title">Candidate Profile & Strengths</h2>
+                        {candidateProfile ? (
+                            <div className="interview-card">
+                                <h3>{candidateProfile.name} - {candidateProfile.currentRole}</h3>
+                                <p><strong>Experience Level:</strong> {candidateProfile.experienceLevel}</p>
+                                <p><strong>Summary:</strong> {candidateProfile.summary}</p>
+                            </div>
+                        ) : (
+                            <p className="empty-state">No profile available.</p>
+                        )}
+                        <h2 className="section-title" style={{ marginTop: '2rem' }}>Strengths</h2>
+                        <div className="cards-list">
+                            {strengths.map((s, index) => (
+                                <div key={index} className="interview-card">
+                                    <h4 className="q-title">{s.strength}</h4>
+                                    <div className="q-answer">
+                                        <strong>Evidence:</strong> {s.evidence}
+                                    </div>
+                                </div>
+                            ))}
+                            {strengths.length === 0 && <p className="empty-state">No strengths available.</p>}
+                        </div>
+                    </div>
+                );
+
             case 'technical':
                 return (
                     <div className="section-content fade-in">
@@ -196,6 +226,13 @@ const Interview = () => {
                     <div className="nav-container">
                         <h3 className="panel-heading">Report Sections</h3>
                         <ul className="nav-menu">
+                            <li 
+                                className={`nav-item ${activeSection === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveSection('overview')}
+                            >
+                                Overview
+                            </li>
+
                             <li 
                                 className={`nav-item ${activeSection === 'technical' ? 'active' : ''}`}
                                 onClick={() => setActiveSection('technical')}
